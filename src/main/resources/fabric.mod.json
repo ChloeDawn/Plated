@@ -5,7 +5,7 @@
   "version": "$version",
   "description": "Allows placement of pressure plates on any solid face of a block",
   "license": "Apache-2.0",
-  "icon": "pack.png",
+  "icon": "/assets/plated/icon.png",
   "depends": {
     "minecraft": "1.16.*",
     "fabricloader": ">=0.10.8"
