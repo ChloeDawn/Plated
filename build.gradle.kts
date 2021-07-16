@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "dev.sapphic"
-version = "2.1.0"
+version = "2.1.1"
 
 java {
   withSourcesJar()
@@ -43,6 +43,10 @@ dependencies {
   implementation("com.google.code.findbugs:jsr305:3.0.2")
   implementation("org.jetbrains:annotations:21.0.1")
   implementation("org.checkerframework:checker-qual:3.15.0")
+
+  modCompileOnly("curse.maven:charm-318872:3379104") {
+    isTransitive = false
+  }
 
   modCompileOnly("curse.maven:red-bits-403914:3367526") {
     isTransitive = false

@@ -7,6 +7,7 @@
     "BasePressurePlateBlockMixin",
     "PressurePlateBlockMixin",
     "WeightedPressurePlateBlockMixin",
+    "charm.PlayerPressurePlateBlockMixin",
     "redbits.ComplexPressurePlateBlockMixin"
   ],
   "refmap": "mixins/plated/refmap.json"
