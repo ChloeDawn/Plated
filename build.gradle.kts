@@ -2,20 +2,30 @@ import org.gradle.util.GradleVersion
 import java.time.Instant
 
 plugins {
-  id("fabric-loom") version "0.5.43"
-  id("net.nemerosa.versioning") version "2.6.1"
+  id("fabric-loom") version "0.8.18"
+  id("net.nemerosa.versioning") version "be24b23"
   id("signing")
 }
 
 group = "dev.sapphic"
-version = "2.0.1"
+version = "2.1.0"
 
 java {
   withSourcesJar()
 }
 
-minecraft {
+loom {
   refmapName = "mixins/plated/refmap.json"
+  runs {
+    configureEach {
+      vmArg("-Dmixin.debug=true")
+      vmArg("-Dmixin.debug.export.decompile=false")
+      vmArg("-Dmixin.debug.verbose=true")
+      vmArg("-Dmixin.dumpTargetOnFailure=true")
+      vmArg("-Dmixin.checks=true")
+      vmArg("-Dmixin.hotSwap=true")
+    }
+  }
 }
 
 repositories {
@@ -27,14 +37,14 @@ repositories {
 }
 
 dependencies {
-  minecraft("com.mojang:minecraft:1.16.4")
-  mappings(minecraft.officialMojangMappings())
-  modImplementation("net.fabricmc:fabric-loader:0.10.8")
+  minecraft("com.mojang:minecraft:1.17.1")
+  mappings(loom.officialMojangMappings())
+  modImplementation("net.fabricmc:fabric-loader:0.11.6")
   implementation("com.google.code.findbugs:jsr305:3.0.2")
-  implementation("org.jetbrains:annotations:20.1.0")
-  implementation("org.checkerframework:checker-qual:3.8.0")
+  implementation("org.jetbrains:annotations:21.0.1")
+  implementation("org.checkerframework:checker-qual:3.15.0")
 
-  modCompileOnly("curse.maven:red-bits-403914:3157729") {
+  modCompileOnly("curse.maven:red-bits-403914:3367526") {
     isTransitive = false
   }
 }
@@ -57,7 +67,7 @@ tasks {
   }
 
   jar {
-    from("/LICENSE.md")
+    from("/LICENSE")
 
     manifest.attributes(
       "Build-Timestamp" to Instant.now(),
@@ -75,8 +85,8 @@ tasks {
       "Implementation-Version" to project.version,
       "Implementation-Vendor" to project.group,
 
-      "Specification-Title" to "MinecraftMod",
-      "Specification-Version" to "1.1.0",
+      "Specification-Title" to "FabricMod",
+      "Specification-Version" to "1.0.0",
       "Specification-Vendor" to project.group,
 
       "Sealed" to "true"
@@ -95,6 +105,10 @@ if (hasProperty("signing.mods.keyalias")) {
 
   listOf(tasks.remapJar, tasks.remapSourcesJar).forEach {
     it.get().doLast {
+      if (!project.file(keystore!!).exists()) {
+        error("Missing keystore $keystore")
+      }
+
       val file = outputs.files.singleFile
       ant.invokeMethod(
         "signjar", mapOf(

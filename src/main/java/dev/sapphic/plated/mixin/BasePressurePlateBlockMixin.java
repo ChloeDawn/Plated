@@ -154,14 +154,6 @@ abstract class BasePressurePlateBlockMixin extends Block implements SimpleWaterl
   }
 
   @Redirect(
-    method = "checkPressed(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)V",
-    at = @At(value = "INVOKE", opcode = Opcodes.INVOKEVIRTUAL,
-      target = "Lnet/minecraft/world/level/block/BasePressurePlateBlock;updateNeighbours(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)V"))
-  private void updateNeighbors116(final BasePressurePlateBlock block, final Level level, final BlockPos pos, final Level level1, final BlockPos pos1, final BlockState state) {
-    this.updateNeighbors(state, level, pos);
-  }
-
-  @Redirect(
     method = "onRemove(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)V",
     require = 1, allow = 1,
     at = @At(value = "INVOKE", opcode = Opcodes.INVOKEVIRTUAL,
