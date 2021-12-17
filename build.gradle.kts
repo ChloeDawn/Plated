@@ -54,11 +54,11 @@ dependencies {
   implementation("org.jetbrains:annotations:23.0.0")
   implementation("org.checkerframework:checker-qual:3.20.0")
 
-  modCompileOnly("curse.maven:charm-318872:3379104") {
+  modCompileOnly("curse.maven:charm-318872:3393290") { // 1.17-3.3.2
     isTransitive = false
   }
 
-  modCompileOnly("curse.maven:red-bits-403914:3367526") {
+  modCompileOnly("curse.maven:red-bits-403914:3481458") { // 1.10.1
     isTransitive = false
   }
 }
