@@ -87,7 +87,7 @@ tasks {
   }
 
   jar {
-    from("/LICENSE")
+    from("/LICENSE.md")
 
     manifest.attributes(
       "Build-Timestamp" to Instant.now(),
