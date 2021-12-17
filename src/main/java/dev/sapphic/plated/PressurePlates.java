@@ -83,5 +83,6 @@ public final class PressurePlates {
       .build());
 
   private PressurePlates() {
+    throw new UnsupportedOperationException();
   }
 }
