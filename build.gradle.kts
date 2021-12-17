@@ -1,9 +1,8 @@
-import org.gradle.util.GradleVersion
 import java.time.Instant
 
 plugins {
-  id("fabric-loom") version "0.8.18"
-  id("net.nemerosa.versioning") version "be24b23"
+  id("fabric-loom") version "0.10.64"
+  id("net.nemerosa.versioning") version "2.15.1"
   id("signing")
 }
 
@@ -15,7 +14,10 @@ java {
 }
 
 loom {
-  refmapName = "mixins/plated/refmap.json"
+  mixin {
+    defaultRefmapName.set("mixins/plated/refmap.json")
+  }
+
   runs {
     configureEach {
       vmArg("-Dmixin.debug=true")
@@ -39,10 +41,10 @@ repositories {
 dependencies {
   minecraft("com.mojang:minecraft:1.17.1")
   mappings(loom.officialMojangMappings())
-  modImplementation("net.fabricmc:fabric-loader:0.11.6")
+  modImplementation("net.fabricmc:fabric-loader:0.12.12")
   implementation("com.google.code.findbugs:jsr305:3.0.2")
-  implementation("org.jetbrains:annotations:21.0.1")
-  implementation("org.checkerframework:checker-qual:3.15.0")
+  implementation("org.jetbrains:annotations:23.0.0")
+  implementation("org.checkerframework:checker-qual:3.20.0")
 
   modCompileOnly("curse.maven:charm-318872:3379104") {
     isTransitive = false
