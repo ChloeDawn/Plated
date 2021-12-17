@@ -1,13 +1,18 @@
 import java.time.Instant
 
 plugins {
-  id("fabric-loom") version "0.10.64"
+  id(/*net.fabricmc.*/ "fabric-loom") version "0.10.64"
+  id("io.github.juuxel.loom-quiltflower-mini") version "1.2.1"
   id("net.nemerosa.versioning") version "2.15.1"
-  id("signing")
+  id("org.gradle.signing")
 }
 
 group = "dev.sapphic"
 version = "2.1.1"
+
+if ("CI" in System.getenv()) {
+  version = "$version-${versioning.info.build}"
+}
 
 java {
   withSourcesJar()
@@ -20,12 +25,14 @@ loom {
 
   runs {
     configureEach {
-      vmArg("-Dmixin.debug=true")
-      vmArg("-Dmixin.debug.export.decompile=false")
-      vmArg("-Dmixin.debug.verbose=true")
-      vmArg("-Dmixin.dumpTargetOnFailure=true")
-      vmArg("-Dmixin.checks=true")
-      vmArg("-Dmixin.hotSwap=true")
+      vmArgs("-Xmx4G", "-XX:+UseZGC")
+
+      property("mixin.debug", "true")
+      property("mixin.debug.export.decompile", "false")
+      property("mixin.debug.verbose", "true")
+      property("mixin.dumpTargetOnFailure", "true")
+      property("mixin.checks", "true")
+      property("mixin.hotSwap", "true")
     }
   }
 }
@@ -41,6 +48,7 @@ repositories {
 dependencies {
   minecraft("com.mojang:minecraft:1.17.1")
   mappings(loom.officialMojangMappings())
+
   modImplementation("net.fabricmc:fabric-loader:0.12.12")
   implementation("com.google.code.findbugs:jsr305:3.0.2")
   implementation("org.jetbrains:annotations:23.0.0")
@@ -58,11 +66,17 @@ dependencies {
 tasks {
   compileJava {
     with(options) {
-      release.set(8)
-      isFork = true
       isDeprecation = true
       encoding = "UTF-8"
-      compilerArgs.addAll(listOf("-Xlint:all", "-parameters"))
+      isFork = true
+      compilerArgs.addAll(
+        listOf(
+          "-Xlint:all",
+          "-Xlint:-processing",
+          "-parameters" // JEP 118
+        )
+      )
+      release.set(8)
     }
   }
 
@@ -86,47 +100,61 @@ tasks {
         System.getProperty("java.vm.version")
       })",
       "Built-By" to GradleVersion.current(),
-
       "Implementation-Title" to project.name,
       "Implementation-Version" to project.version,
       "Implementation-Vendor" to project.group,
-
       "Specification-Title" to "FabricMod",
       "Specification-Version" to "1.0.0",
       "Specification-Vendor" to project.group,
-
       "Sealed" to "true"
     )
   }
 
-  assemble {
-    dependsOn(versionFile)
-  }
-}
+  if (hasProperty("signing.mods.keyalias")) {
+    val alias = property("signing.mods.keyalias")
+    val keystore = property("signing.mods.keystore")
+    val password = property("signing.mods.password")
 
-if (hasProperty("signing.mods.keyalias")) {
-  val alias = property("signing.mods.keyalias")
-  val keystore = property("signing.mods.keystore")
-  val password = property("signing.mods.password")
-
-  listOf(tasks.remapJar, tasks.remapSourcesJar).forEach {
-    it.get().doLast {
-      if (!project.file(keystore!!).exists()) {
-        error("Missing keystore $keystore")
+    fun Sign.antSignJar(task: Task) =
+      task.outputs.files.forEach { file ->
+        ant.invokeMethod(
+          "signjar", mapOf(
+            "jar" to file,
+            "alias" to alias,
+            "storepass" to password,
+            "keystore" to keystore,
+            "verbose" to true,
+            "preservelastmodified" to true
+          )
+        )
       }
 
-      val file = outputs.files.singleFile
-      ant.invokeMethod(
-        "signjar", mapOf(
-          "jar" to file,
-          "alias" to alias,
-          "storepass" to password,
-          "keystore" to keystore,
-          "verbose" to true,
-          "preservelastmodified" to true
-        )
-      )
-      signing.sign(file)
+    val signJar by creating(Sign::class) {
+      dependsOn(remapJar)
+
+      doFirst {
+        antSignJar(remapJar.get())
+      }
+
+      sign(remapJar.get())
+    }
+    val signSourcesJar by creating(Sign::class) {
+      dependsOn(remapSourcesJar)
+      /*
+      Loom does not expose remapSourcesJar as a Jar task
+      so we target the original sourcesJar task here
+      NOTE This will fail when the internals change
+      */
+
+      doFirst {
+        antSignJar(getByName<Jar>("sourcesJar"))
+      }
+
+      sign(getByName<Jar>("sourcesJar"))
+    }
+
+    assemble {
+      dependsOn(signJar, signSourcesJar)
     }
   }
 }
