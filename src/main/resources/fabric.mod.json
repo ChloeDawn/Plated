@@ -3,11 +3,11 @@
   "id": "plated",
   "name": "Plated",
   "version": "$version",
-  "description": "Allows placement of pressure plates on any solid face of a block",
+  "description": "Allows placement of pressure plates on any solid face of a block.",
   "license": "Apache-2.0",
   "depends": {
     "minecraft": ">=1.16 <=1.17.1",
-    "fabricloader": ">=0.11.6",
+    "fabricloader": ">=0.12.11",
     "java": ">=8"
   },
   "conflicts": {
