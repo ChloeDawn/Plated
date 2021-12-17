@@ -49,10 +49,10 @@ import java.util.regex.Pattern;
 @Environment(EnvType.CLIENT)
 abstract class ModelBakeryMixin {
   @Unique
-  private static final Pattern BLOCK_STATE_KEY_PATTERN = Pattern.compile("blockstates/(?<key>.*)[.]json");
+  private static final Pattern BLOCK_STATE_KEY_PATTERN =
+      Pattern.compile("blockstates/(?<key>.*)[.]json");
 
-  @Unique
-  private static final Direction[] DIRECTIONS = Direction.values();
+  @Unique private static final Direction[] DIRECTIONS = Direction.values();
 
   @Unique
   private static @Nullable ResourceLocation resolve(final ResourceLocation rl) {
@@ -67,7 +67,8 @@ abstract class ModelBakeryMixin {
 
   @Unique
   private static Variant cloneRotated(final Variant variant, final Transformation rotation) {
-    return new Variant(variant.getModelLocation(), rotation, variant.isUvLocked(), variant.getWeight());
+    return new Variant(
+        variant.getModelLocation(), rotation, variant.isUvLocked(), variant.getWeight());
   }
 
   @Unique
@@ -81,10 +82,15 @@ abstract class ModelBakeryMixin {
   }
 
   @ModifyVariable(
-    method = "lambda$loadModel$17(Lnet/minecraft/server/packs/resources/Resource;)Lcom/mojang/datafixers/util/Pair;",
-    require = 1, allow = 1,
-    at = @At("RETURN"))
-  private Pair<String, BlockModelDefinition> applyPressurePlateRotation(final Pair<String, BlockModelDefinition> pair, final Resource resource) {
+      method =
+          "lambda$loadModel$17("
+              + "Lnet/minecraft/server/packs/resources/Resource;"
+              + ")Lcom/mojang/datafixers/util/Pair;",
+      require = 1,
+      allow = 1,
+      at = @At("RETURN"))
+  private Pair<String, BlockModelDefinition> applyPressurePlateRotation(
+      final Pair<String, BlockModelDefinition> pair, final Resource resource) {
     if (Registry.BLOCK.get(resolve(resource.getLocation())) instanceof BasePressurePlateBlock) {
       final Map<String, MultiVariant> ogs = pair.getSecond().getVariants();
       final Map<String, MultiVariant> ngs = new HashMap<>(ogs.size() * 6);

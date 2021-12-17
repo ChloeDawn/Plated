@@ -26,61 +26,45 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-/**
- * Reference constants used by pressure plate mixins
- */
 public final class PressurePlates {
-  /**
-   * The property that represents the new facing direction of pressure plates
-   */
   public static final DirectionProperty FACING = BlockStateProperties.FACING;
-
-  /**
-   * The property that represents the new waterlogging state of pressure plates
-   */
   public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-  /**
-   * A collection of {@link VoxelShape} bounding boxes that represent
-   * each orientation of a unpressed (unpowered) plate's interaction shape
-   */
+  /** {@link VoxelShape} bounds for each orientation of an unpressed (unpowered) plate's shape */
   public static final ImmutableMap<Direction, VoxelShape> AABBS =
-    Maps.immutableEnumMap(ImmutableMap.<Direction, VoxelShape>builder()
-      .put(Direction.DOWN, Block.box(1.0, 15.0, 1.0, 15.0, 16.0, 15.0))
-      .put(Direction.UP, Block.box(1.0, 0.0, 1.0, 15.0, 1.0, 15.0))
-      .put(Direction.NORTH, Block.box(1.0, 1.0, 15.0, 15.0, 15.0, 16.0))
-      .put(Direction.SOUTH, Block.box(1.0, 1.0, 0.0, 15.0, 15.0, 1.0))
-      .put(Direction.WEST, Block.box(15.0, 1.0, 1.0, 16.0, 15.0, 15.0))
-      .put(Direction.EAST, Block.box(0.0, 1.0, 1.0, 1.0, 15.0, 15.0))
-      .build());
+      Maps.immutableEnumMap(
+          ImmutableMap.<Direction, VoxelShape>builder()
+              .put(Direction.DOWN, Block.box(1.0, 15.0, 1.0, 15.0, 16.0, 15.0))
+              .put(Direction.UP, Block.box(1.0, 0.0, 1.0, 15.0, 1.0, 15.0))
+              .put(Direction.NORTH, Block.box(1.0, 1.0, 15.0, 15.0, 15.0, 16.0))
+              .put(Direction.SOUTH, Block.box(1.0, 1.0, 0.0, 15.0, 15.0, 1.0))
+              .put(Direction.WEST, Block.box(15.0, 1.0, 1.0, 16.0, 15.0, 15.0))
+              .put(Direction.EAST, Block.box(0.0, 1.0, 1.0, 1.0, 15.0, 15.0))
+              .build());
 
-  /**
-   * A collection of {@link VoxelShape} bounding boxes that represent
-   * each orientation of a pressed (powered) plate's interaction shape
-   */
+  /** {@link VoxelShape} bounds for each orientation of a pressed (powered) plate's shape */
   public static final ImmutableMap<Direction, VoxelShape> PRESSED_AABBS =
-    Maps.immutableEnumMap(ImmutableMap.<Direction, VoxelShape>builder()
-      .put(Direction.DOWN, Block.box(1.0, 15.5, 1.0, 15.0, 16.0, 15.0))
-      .put(Direction.UP, Block.box(1.0, 0.0, 1.0, 15.0, 0.5, 15.0))
-      .put(Direction.NORTH, Block.box(1.0, 1.0, 15.5, 15.0, 15.0, 16.0))
-      .put(Direction.SOUTH, Block.box(1.0, 1.0, 0.0, 15.0, 15.0, 0.5))
-      .put(Direction.WEST, Block.box(15.5, 1.0, 1.0, 16.0, 15.0, 15.0))
-      .put(Direction.EAST, Block.box(0.0, 1.0, 1.0, 0.5, 15.0, 15.0))
-      .build());
+      Maps.immutableEnumMap(
+          ImmutableMap.<Direction, VoxelShape>builder()
+              .put(Direction.DOWN, Block.box(1.0, 15.5, 1.0, 15.0, 16.0, 15.0))
+              .put(Direction.UP, Block.box(1.0, 0.0, 1.0, 15.0, 0.5, 15.0))
+              .put(Direction.NORTH, Block.box(1.0, 1.0, 15.5, 15.0, 15.0, 16.0))
+              .put(Direction.SOUTH, Block.box(1.0, 1.0, 0.0, 15.0, 15.0, 0.5))
+              .put(Direction.WEST, Block.box(15.5, 1.0, 1.0, 16.0, 15.0, 15.0))
+              .put(Direction.EAST, Block.box(0.0, 1.0, 1.0, 0.5, 15.0, 15.0))
+              .build());
 
-  /**
-   * A collection of {@link AABB} bounding boxes that represent
-   * each orientation of a pressure plate's intersection bounds
-   */
+  /** {@link AABB} bounds for each orientation of a pressure plate's intersection bounds */
   public static final ImmutableMap<Direction, AABB> TOUCH_AABBS =
-    Maps.immutableEnumMap(ImmutableMap.<Direction, AABB>builder()
-      .put(Direction.DOWN, new AABB(0.125, 0.75, 0.125, 0.875, 1.0, 0.875))
-      .put(Direction.UP, new AABB(0.125, 0.0, 0.125, 0.875, 0.25, 0.875))
-      .put(Direction.NORTH, new AABB(0.125, 0.125, 0.75, 0.875, 0.875, 1.0))
-      .put(Direction.SOUTH, new AABB(0.125, 0.125, 0.0, 0.875, 0.875, 0.25))
-      .put(Direction.WEST, new AABB(0.75, 0.125, 0.125, 1.0, 0.875, 0.875))
-      .put(Direction.EAST, new AABB(0.0, 0.125, 0.125, 0.25, 0.875, 0.875))
-      .build());
+      Maps.immutableEnumMap(
+          ImmutableMap.<Direction, AABB>builder()
+              .put(Direction.DOWN, new AABB(0.125, 0.75, 0.125, 0.875, 1.0, 0.875))
+              .put(Direction.UP, new AABB(0.125, 0.0, 0.125, 0.875, 0.25, 0.875))
+              .put(Direction.NORTH, new AABB(0.125, 0.125, 0.75, 0.875, 0.875, 1.0))
+              .put(Direction.SOUTH, new AABB(0.125, 0.125, 0.0, 0.875, 0.875, 0.25))
+              .put(Direction.WEST, new AABB(0.75, 0.125, 0.125, 1.0, 0.875, 0.875))
+              .put(Direction.EAST, new AABB(0.0, 0.125, 0.125, 0.25, 0.875, 0.875))
+              .build());
 
   private PressurePlates() {
     throw new UnsupportedOperationException();

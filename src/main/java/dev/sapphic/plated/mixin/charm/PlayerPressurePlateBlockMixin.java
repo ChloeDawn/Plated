@@ -37,10 +37,21 @@ abstract class PlayerPressurePlateBlockMixin extends PressurePlateBlock implemen
   }
 
   @Redirect(
-    method = "getSignalStrength(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)I",
-    require = 1, allow = 1,
-    at = @At(value = "FIELD", opcode = Opcodes.GETSTATIC,
-      target = "Lsvenhjol/charm/module/player_pressure_plates/PlayerPressurePlateBlock;TOUCH_AABB:Lnet/minecraft/world/phys/AABB;"))
+      method =
+          "getSignalStrength("
+              + "Lnet/minecraft/world/level/Level;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + ")I",
+      require = 1,
+      allow = 1,
+      at =
+          @At(
+              value = "FIELD",
+              opcode = Opcodes.GETSTATIC,
+              target =
+                  "Lsvenhjol/charm/module/player_pressure_plates/PlayerPressurePlateBlock;"
+                      + "TOUCH_AABB:"
+                      + "Lnet/minecraft/world/phys/AABB;"))
   private AABB getTouchAABB(final Level level, final BlockPos pos) {
     return TOUCH_AABBS.get(level.getBlockState(pos).getValue(FACING));
   }

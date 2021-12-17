@@ -44,26 +44,54 @@ abstract class WeightedPressurePlateBlockMixin extends BasePressurePlateBlock {
   }
 
   @ModifyArg(
-    method = "<init>(ILnet/minecraft/world/level/block/state/BlockBehaviour$Properties;)V",
-    require = 1, allow = 1,
-    at = @At(value = "INVOKE", opcode = Opcodes.INVOKEVIRTUAL,
-      target = "Lnet/minecraft/world/level/block/WeightedPressurePlateBlock;registerDefaultState(Lnet/minecraft/world/level/block/state/BlockState;)V"))
+      method =
+          "<init>("
+              + "I"
+              + "Lnet/minecraft/world/level/block/state/BlockBehaviour$Properties;"
+              + ")V",
+      require = 1,
+      allow = 1,
+      at =
+          @At(
+              value = "INVOKE",
+              opcode = Opcodes.INVOKEVIRTUAL,
+              target =
+                  "Lnet/minecraft/world/level/block/WeightedPressurePlateBlock;"
+                      + "registerDefaultState("
+                      + "Lnet/minecraft/world/level/block/state/BlockState;"
+                      + ")V"))
   private BlockState setDefaultFacing(final BlockState state) {
     return state.setValue(FACING, Direction.UP).setValue(WATERLOGGED, false);
   }
 
-  @Redirect(method = "getSignalStrength(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)I",
-    require = 1, allow = 1,
-    at = @At(value = "FIELD", opcode = Opcodes.GETSTATIC,
-      target = "Lnet/minecraft/world/level/block/WeightedPressurePlateBlock;TOUCH_AABB:Lnet/minecraft/world/phys/AABB;"))
+  @Redirect(
+      method =
+          "getSignalStrength("
+              + "Lnet/minecraft/world/level/Level;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + ")I",
+      require = 1,
+      allow = 1,
+      at =
+          @At(
+              value = "FIELD",
+              opcode = Opcodes.GETSTATIC,
+              target =
+                  "Lnet/minecraft/world/level/block/WeightedPressurePlateBlock;"
+                      + "TOUCH_AABB:"
+                      + "Lnet/minecraft/world/phys/AABB;"))
   private AABB getTouchAABB(final Level level, final BlockPos pos) {
     return TOUCH_AABBS.get(level.getBlockState(pos).getValue(FACING));
   }
 
   @Inject(
-    method = "createBlockStateDefinition(Lnet/minecraft/world/level/block/state/StateDefinition$Builder;)V",
-    at = @At("TAIL"))
-  private void addProperties(final StateDefinition.Builder<Block, BlockState> builder, final CallbackInfo ci) {
+      method =
+          "createBlockStateDefinition("
+              + "Lnet/minecraft/world/level/block/state/StateDefinition$Builder;"
+              + ")V",
+      at = @At("TAIL"))
+  private void addProperties(
+      final StateDefinition.Builder<Block, BlockState> builder, final CallbackInfo ci) {
     builder.add(FACING, WATERLOGGED);
   }
 }

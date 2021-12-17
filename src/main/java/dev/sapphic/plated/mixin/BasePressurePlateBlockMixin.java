@@ -58,8 +58,9 @@ abstract class BasePressurePlateBlockMixin extends Block implements SimpleWaterl
     final Level level = context.getLevel();
     final BlockPos pos = context.getClickedPos();
     final Direction clickedFace = context.getClickedFace();
-    BlockState state = this.defaultBlockState().setValue(FACING, clickedFace)
-      .setValue(WATERLOGGED, level.getFluidState(pos).getType() == Fluids.WATER);
+    final boolean waterlogged = level.getFluidState(pos).getType() == Fluids.WATER;
+    BlockState state =
+        this.defaultBlockState().setValue(FACING, clickedFace).setValue(WATERLOGGED, waterlogged);
 
     // Always prefer the clicked face
     if (state.canSurvive(level, pos)) {
@@ -100,87 +101,189 @@ abstract class BasePressurePlateBlockMixin extends Block implements SimpleWaterl
   }
 
   @Redirect(
-    method = "getShape(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;",
-    require = 1, allow = 1,
-    at = @At(value = "FIELD", opcode = Opcodes.GETSTATIC,
-      target = "Lnet/minecraft/world/level/block/BasePressurePlateBlock;PRESSED_AABB:Lnet/minecraft/world/phys/shapes/VoxelShape;"))
+      method =
+          "getShape("
+              + "Lnet/minecraft/world/level/block/state/BlockState;"
+              + "Lnet/minecraft/world/level/BlockGetter;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + "Lnet/minecraft/world/phys/shapes/CollisionContext;"
+              + ")Lnet/minecraft/world/phys/shapes/VoxelShape;",
+      require = 1,
+      allow = 1,
+      at =
+          @At(
+              value = "FIELD",
+              opcode = Opcodes.GETSTATIC,
+              target =
+                  "Lnet/minecraft/world/level/block/BasePressurePlateBlock;"
+                      + "PRESSED_AABB:"
+                      + "Lnet/minecraft/world/phys/shapes/VoxelShape;"))
   private VoxelShape getPressedDirectionalShape(final BlockState state) {
     return PRESSED_AABBS.get(state.getValue(FACING));
   }
 
   @Redirect(
-    method = "getShape(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;",
-    require = 1, allow = 1,
-    at = @At(value = "FIELD", opcode = Opcodes.GETSTATIC,
-      target = "Lnet/minecraft/world/level/block/BasePressurePlateBlock;AABB:Lnet/minecraft/world/phys/shapes/VoxelShape;"))
+      method =
+          "getShape("
+              + "Lnet/minecraft/world/level/block/state/BlockState;"
+              + "Lnet/minecraft/world/level/BlockGetter;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + "Lnet/minecraft/world/phys/shapes/CollisionContext;"
+              + ")Lnet/minecraft/world/phys/shapes/VoxelShape;",
+      require = 1,
+      allow = 1,
+      at =
+          @At(
+              value = "FIELD",
+              opcode = Opcodes.GETSTATIC,
+              target =
+                  "Lnet/minecraft/world/level/block/BasePressurePlateBlock;"
+                      + "AABB:"
+                      + "Lnet/minecraft/world/phys/shapes/VoxelShape;"))
   private VoxelShape getDirectionalShape(final BlockState state) {
     return AABBS.get(state.getValue(FACING));
   }
 
   @Inject(
-    method = "updateShape(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/Direction;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/state/BlockState;",
-    at = @At("HEAD"))
-  private void updateFluidState(final BlockState state, final Direction side, final BlockState neighbor, final LevelAccessor level, final BlockPos pos, final BlockPos offset, final CallbackInfoReturnable<BlockState> ci) {
+      method =
+          "updateShape("
+              + "Lnet/minecraft/world/level/block/state/BlockState;"
+              + "Lnet/minecraft/core/Direction;"
+              + "Lnet/minecraft/world/level/block/state/BlockState;"
+              + "Lnet/minecraft/world/level/LevelAccessor;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + ")Lnet/minecraft/world/level/block/state/BlockState;",
+      at = @At("HEAD"))
+  private void updateFluidState(
+      final BlockState state,
+      final Direction side,
+      final BlockState neighbor,
+      final LevelAccessor level,
+      final BlockPos pos,
+      final BlockPos offset,
+      final CallbackInfoReturnable<BlockState> ci) {
     if (state.getValue(WATERLOGGED)) {
       level.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
     }
   }
 
   @Redirect(
-    method = "updateShape(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/Direction;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/state/BlockState;",
-    require = 1, allow = 1,
-    at = @At(value = "FIELD", opcode = Opcodes.GETSTATIC,
-      target = "Lnet/minecraft/core/Direction;DOWN:Lnet/minecraft/core/Direction;"))
+      method =
+          "updateShape("
+              + "Lnet/minecraft/world/level/block/state/BlockState;"
+              + "Lnet/minecraft/core/Direction;"
+              + "Lnet/minecraft/world/level/block/state/BlockState;"
+              + "Lnet/minecraft/world/level/LevelAccessor;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + ")Lnet/minecraft/world/level/block/state/BlockState;",
+      require = 1,
+      allow = 1,
+      at =
+          @At(
+              value = "FIELD",
+              opcode = Opcodes.GETSTATIC,
+              target = "Lnet/minecraft/core/Direction;DOWN:Lnet/minecraft/core/Direction;"))
   private Direction getNeighborFace(final BlockState state) {
     return state.getValue(FACING).getOpposite();
   }
 
   @Redirect(
-    method = "canSurvive(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z",
-    require = 1, allow = 1,
-    at = @At(value = "INVOKE", opcode = Opcodes.INVOKEVIRTUAL,
-      target = "Lnet/minecraft/core/BlockPos;below()Lnet/minecraft/core/BlockPos;"))
+      method =
+          "canSurvive("
+              + "Lnet/minecraft/world/level/block/state/BlockState;"
+              + "Lnet/minecraft/world/level/LevelReader;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + ")Z",
+      require = 1,
+      allow = 1,
+      at =
+          @At(
+              value = "INVOKE",
+              opcode = Opcodes.INVOKEVIRTUAL,
+              target =
+                  "Lnet/minecraft/core/BlockPos;" + "below()" + "Lnet/minecraft/core/BlockPos;"))
   private BlockPos getSurfacePos(final BlockPos pos, final BlockState state) {
     return pos.relative(state.getValue(FACING).getOpposite());
   }
 
   @Redirect(
-    method = "canSurvive(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z",
-    require = 1, allow = 1,
-    at = @At(value = "FIELD", opcode = Opcodes.GETSTATIC,
-      target = "Lnet/minecraft/core/Direction;UP:Lnet/minecraft/core/Direction;"))
+      method =
+          "canSurvive("
+              + "Lnet/minecraft/world/level/block/state/BlockState;"
+              + "Lnet/minecraft/world/level/LevelReader;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + ")Z",
+      require = 1,
+      allow = 1,
+      at =
+          @At(
+              value = "FIELD",
+              opcode = Opcodes.GETSTATIC,
+              target = "Lnet/minecraft/core/Direction;" + "UP:" + "Lnet/minecraft/core/Direction;"))
   private Direction getSurvivableFace(final BlockState state) {
     return state.getValue(FACING);
   }
 
   @Redirect(
-    method = "onRemove(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)V",
-    require = 1, allow = 1,
-    at = @At(value = "INVOKE", opcode = Opcodes.INVOKEVIRTUAL,
-      target = "Lnet/minecraft/world/level/block/BasePressurePlateBlock;updateNeighbours(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)V"))
-  private void updateNeighbors(final BasePressurePlateBlock block, final Level level, final BlockPos pos, final BlockState state) {
+      method =
+          "onRemove("
+              + "Lnet/minecraft/world/level/block/state/BlockState;"
+              + "Lnet/minecraft/world/level/Level;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + "Lnet/minecraft/world/level/block/state/BlockState;"
+              + "Z"
+              + ")V",
+      require = 1,
+      allow = 1,
+      at =
+          @At(
+              value = "INVOKE",
+              opcode = Opcodes.INVOKEVIRTUAL,
+              target =
+                  "Lnet/minecraft/world/level/block/BasePressurePlateBlock;"
+                      + "updateNeighbours("
+                      + "Lnet/minecraft/world/level/Level;"
+                      + "Lnet/minecraft/core/BlockPos;"
+                      + ")V"))
+  private void updateNeighbors(
+      final BasePressurePlateBlock block,
+      final Level level,
+      final BlockPos pos,
+      final BlockState state) {
     this.updateNeighbors(state, level, pos);
   }
 
   @Redirect(
-    method = "getDirectSignal(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Direction;)I",
-    require = 1, allow = 1,
-    at = @At(value = "FIELD", opcode = Opcodes.GETSTATIC,
-      target = "Lnet/minecraft/core/Direction;UP:Lnet/minecraft/core/Direction;"))
+      method =
+          "getDirectSignal("
+              + "Lnet/minecraft/world/level/block/state/BlockState;"
+              + "Lnet/minecraft/world/level/BlockGetter;"
+              + "Lnet/minecraft/core/BlockPos;"
+              + "Lnet/minecraft/core/Direction;"
+              + ")I",
+      require = 1,
+      allow = 1,
+      at =
+          @At(
+              value = "FIELD",
+              opcode = Opcodes.GETSTATIC,
+              target = "Lnet/minecraft/core/Direction;" + "UP:" + "Lnet/minecraft/core/Direction;"))
   private Direction getConductiveFace(final BlockState state) {
     return state.getValue(FACING);
   }
 
   /**
-   * We are redirecting the calls rather than injecting into the target as when the block is removed,
-   * the state will not be equal to {@code level.getBlockState(pos)} and therefore we need to capture
-   * the original state at the call sites. This implementation is fairly inefficient as the first
-   * call updates the below position and the second call updates the origin position, but this is how
-   * it is implemented in the original method and we want to respect existing semantics
+   * We are redirecting the calls rather than injecting into the target as when the block is
+   * removed, the state will not be equal to {@code level.getBlockState(pos)} and therefore we need
+   * to capture the original state at the call sites. This implementation is fairly inefficient as
+   * the first call updates the below position and the second call updates the origin position, but
+   * this is how it is implemented in the original method and we want to respect existing semantics
    *
    * @param state The block state
    * @param level The level to update neighbors in
-   * @param pos   The origin position
+   * @param pos The origin position
    */
   @Unique
   private void updateNeighbors(final BlockState state, final Level level, final BlockPos pos) {
