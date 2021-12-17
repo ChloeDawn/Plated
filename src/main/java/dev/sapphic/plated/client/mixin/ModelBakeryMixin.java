@@ -80,7 +80,6 @@ abstract class ModelBakeryMixin {
     return String.join(",", variants);
   }
 
-  @SuppressWarnings("UnresolvedMixinReference") // IDE plugin cannot resolve synthetic targets
   @ModifyVariable(
     method = "lambda$loadModel$17(Lnet/minecraft/server/packs/resources/Resource;)Lcom/mojang/datafixers/util/Pair;",
     require = 1, allow = 1,
