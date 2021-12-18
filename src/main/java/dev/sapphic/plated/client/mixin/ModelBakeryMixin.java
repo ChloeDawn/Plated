@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Mixin(ModelBakery.class)
 @Environment(EnvType.CLIENT)
