@@ -39,11 +39,12 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Mixin(ModelBakery.class)
 @Environment(EnvType.CLIENT)
@@ -66,15 +67,14 @@ abstract class ModelBakeryMixin {
   }
 
   @Unique
-  private static Variant cloneRotated(final Variant variant, final Transformation rotation) {
-    return new Variant(
-        variant.getModelLocation(), rotation, variant.isUvLocked(), variant.getWeight());
+  private static Variant rotated(final Variant v, final Transformation transformation) {
+    return new Variant(v.getModelLocation(), transformation, v.isUvLocked(), v.getWeight());
   }
 
   @Unique
-  private static String withFacing(final Direction dir, final String variant) {
-    final String facing = PressurePlates.FACING.getName() + '=' + dir.getName();
-    final String[] variants = ObjectArrays.concat(facing, variant.split("[,]"));
+  private static String facing(final Direction direction, final String variantString) {
+    final String facing = PressurePlates.FACING.getName() + '=' + direction.getName();
+    final String[] variants = ObjectArrays.concat(facing, variantString.split("[,]"));
 
     Arrays.sort(variants);
 
@@ -92,26 +92,23 @@ abstract class ModelBakeryMixin {
   private Pair<String, BlockModelDefinition> applyPressurePlateRotation(
       final Pair<String, BlockModelDefinition> pair, final Resource resource) {
     if (Registry.BLOCK.get(resolve(resource.getLocation())) instanceof BasePressurePlateBlock) {
-      final Map<String, MultiVariant> ogs = pair.getSecond().getVariants();
-      final Map<String, MultiVariant> ngs = new HashMap<>(ogs.size() * 6);
+      final Map<String, MultiVariant> groups = pair.getSecond().getVariants();
 
-      for (final Direction dir : DIRECTIONS) {
-        final Transformation rot = new Transformation(null, dir.getRotation(), null, null);
+      for (final String variantString : new HashSet<>(groups.keySet())) {
+        final List<Variant> variants = groups.remove(variantString).getVariants();
 
-        for (final Map.Entry<String, MultiVariant> e : ogs.entrySet()) {
-          final List<Variant> ovs = e.getValue().getVariants();
-          final List<Variant> nvs = new ArrayList<>(ovs.size() * 6);
+        for (final Direction direction : DIRECTIONS) {
+          final List<Variant> rotatedVariants = new ArrayList<>(variants.size());
+          final Transformation transformation =
+              new Transformation(null, direction.getRotation(), null, null);
 
-          for (final Variant variant : ovs) {
-            nvs.add(cloneRotated(variant, rot));
+          for (final Variant variant : variants) {
+            rotatedVariants.add(rotated(variant, transformation));
           }
 
-          ngs.put(withFacing(dir, e.getKey()), new MultiVariant(nvs));
+          groups.put(facing(direction, variantString), new MultiVariant(rotatedVariants));
         }
       }
-
-      ogs.clear();
-      ogs.putAll(ngs);
     }
 
     return pair;
