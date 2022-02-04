@@ -164,7 +164,7 @@ abstract class BasePressurePlateBlockMixin extends Block implements SimpleWaterl
       final BlockPos offset,
       final CallbackInfoReturnable<BlockState> ci) {
     if (state.getValue(WATERLOGGED)) {
-      level.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+      level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
     }
   }
 

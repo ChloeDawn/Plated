@@ -6,7 +6,7 @@
   "description": "Allows placement of pressure plates on any solid face of a block.",
   "license": "Apache-2.0",
   "depends": {
-    "minecraft": ">=1.16 <=1.17.1",
+    "minecraft": "1.18.x",
     "fabricloader": ">=0.12.11",
     "java": ">=8"
   },
@@ -22,8 +22,8 @@
     "Chloe Dawn"
   ],
   "contact": {
-    "homepage": "https://bit.ly/3kEJS8j",
-    "sources": "https://git.io/JY81y",
-    "issues": "https://git.io/JWKa8"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/plated",
+    "sources": "https://github.com/ChloeDawn/Plated",
+    "issues": "https://github.com/ChloeDawn/Plated/issues"
   }
 }

@@ -1,14 +1,14 @@
 import java.time.Instant
 
 plugins {
-  id(/*net.fabricmc.*/ "fabric-loom") version "0.10.64"
+  id(/*net.fabricmc.*/ "fabric-loom") version "0.10.66"
   id("io.github.juuxel.loom-quiltflower-mini") version "1.2.1"
   id("net.nemerosa.versioning") version "2.15.1"
   id("org.gradle.signing")
 }
 
 group = "dev.sapphic"
-version = "2.1.1"
+version = "2.2.0"
 
 if ("CI" in System.getenv()) {
   version = "$version-${versioning.info.build}"
@@ -46,19 +46,19 @@ repositories {
 }
 
 dependencies {
-  minecraft("com.mojang:minecraft:1.17.1")
+  minecraft("com.mojang:minecraft:1.18.1")
   mappings(loom.officialMojangMappings())
 
-  modImplementation("net.fabricmc:fabric-loader:0.12.12")
+  modImplementation("net.fabricmc:fabric-loader:0.13.0")
   implementation("com.google.code.findbugs:jsr305:3.0.2")
   implementation("org.jetbrains:annotations:23.0.0")
-  implementation("org.checkerframework:checker-qual:3.20.0")
+  implementation("org.checkerframework:checker-qual:3.21.1")
 
   modCompileOnly("curse.maven:charm-318872:3393290") { // 1.17-3.3.2
     isTransitive = false
   }
 
-  modCompileOnly("curse.maven:red-bits-403914:3481458") { // 1.10.1
+  modCompileOnly("curse.maven:red-bits-403914:3612273") { // 1.12.0
     isTransitive = false
   }
 }
