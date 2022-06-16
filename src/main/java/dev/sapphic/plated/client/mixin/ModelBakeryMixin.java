@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Chloe Dawn
+ * Copyright 2022 Chloe Dawn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,9 +40,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Mixin(ModelBakery.class)
@@ -50,13 +47,13 @@ import java.util.regex.Pattern;
 abstract class ModelBakeryMixin {
   @Unique
   private static final Pattern BLOCK_STATE_KEY_PATTERN =
-      Pattern.compile("blockstates/(?<key>.*)[.]json");
+      Pattern.compile("^blockstates/(?<key>.*)[.]json$");
 
   @Unique private static final Direction[] DIRECTIONS = Direction.values();
 
   @Unique
   private static @Nullable ResourceLocation resolve(final ResourceLocation rl) {
-    final Matcher matcher = BLOCK_STATE_KEY_PATTERN.matcher(rl.getPath());
+    final var matcher = BLOCK_STATE_KEY_PATTERN.matcher(rl.getPath());
 
     if (matcher.find()) {
       return ResourceLocation.tryParse(rl.getNamespace() + ':' + matcher.group("key"));
@@ -72,8 +69,8 @@ abstract class ModelBakeryMixin {
 
   @Unique
   private static String facing(final Direction direction, final String variantString) {
-    final String facing = PressurePlates.FACING.getName() + '=' + direction.getName();
-    final String[] variants = ObjectArrays.concat(facing, variantString.split("[,]"));
+    final var facing = PressurePlates.FACING.getName() + '=' + direction.getName();
+    final var variants = ObjectArrays.concat(facing, variantString.split(","));
 
     Arrays.sort(variants);
 
@@ -82,26 +79,27 @@ abstract class ModelBakeryMixin {
 
   @ModifyVariable(
       method =
-          "lambda$loadModel$17("
-              + "Lnet/minecraft/server/packs/resources/Resource;"
+          "lambda$loadModel$17(" 
+              + "Lnet/minecraft/resources/ResourceLocation;" 
+              + "Lnet/minecraft/server/packs/resources/Resource;" 
               + ")Lcom/mojang/datafixers/util/Pair;",
       require = 1,
       allow = 1,
       at = @At("RETURN"))
   private Pair<String, BlockModelDefinition> applyPressurePlateRotation(
-      final Pair<String, BlockModelDefinition> pair, final Resource resource) {
-    if (Registry.BLOCK.get(resolve(resource.getLocation())) instanceof BasePressurePlateBlock) {
-      final Map<String, MultiVariant> groups = pair.getSecond().getVariants();
+      final Pair<String, BlockModelDefinition> pair, final ResourceLocation location, final Resource resource) {
+    if (Registry.BLOCK.get(resolve(location)) instanceof BasePressurePlateBlock) {
+      final var groups = pair.getSecond().getVariants();
 
-      for (final String variantString : new HashSet<>(groups.keySet())) {
-        final List<Variant> variants = groups.remove(variantString).getVariants();
+      for (final var variantString : new HashSet<>(groups.keySet())) {
+        final var variants = groups.remove(variantString).getVariants();
 
-        for (final Direction direction : DIRECTIONS) {
-          final List<Variant> rotatedVariants = new ArrayList<>(variants.size());
-          final Transformation transformation =
+        for (final var direction : DIRECTIONS) {
+          final var rotatedVariants = new ArrayList<Variant>(variants.size());
+          final var transformation =
               new Transformation(null, direction.getRotation(), null, null);
 
-          for (final Variant variant : variants) {
+          for (final var variant : variants) {
             rotatedVariants.add(rotated(variant, transformation));
           }
 

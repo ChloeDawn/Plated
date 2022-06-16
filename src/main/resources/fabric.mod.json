@@ -6,13 +6,9 @@
   "description": "Allows placement of pressure plates on any solid face of a block.",
   "license": "Apache-2.0",
   "depends": {
-    "minecraft": "1.18.x",
-    "fabricloader": ">=0.12.11",
+    "minecraft": "1.19",
+    "fabricloader": ">=0.14.6",
     "java": ">=8"
-  },
-  "conflicts": {
-    "charm": "<3.1.1",
-    "red-bits": "<1.7.0"
   },
   "mixins": [
     "mixins/plated/mixins.client.json",

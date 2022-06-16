@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Chloe Dawn
+ * Copyright 2022 Chloe Dawn
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,11 +55,11 @@ abstract class BasePressurePlateBlockMixin extends Block implements SimpleWaterl
 
   @Override
   public @Nullable BlockState getStateForPlacement(final BlockPlaceContext context) {
-    final Level level = context.getLevel();
-    final BlockPos pos = context.getClickedPos();
-    final Direction clickedFace = context.getClickedFace();
-    final boolean waterlogged = level.getFluidState(pos).getType() == Fluids.WATER;
-    BlockState state =
+    final var level = context.getLevel();
+    final var pos = context.getClickedPos();
+    final var clickedFace = context.getClickedFace();
+    final var waterlogged = level.getFluidState(pos).getType() == Fluids.WATER;
+    var state =
         this.defaultBlockState().setValue(FACING, clickedFace).setValue(WATERLOGGED, waterlogged);
 
     // Always prefer the clicked face
@@ -67,7 +67,7 @@ abstract class BasePressurePlateBlockMixin extends Block implements SimpleWaterl
       return state;
     }
 
-    for (final Direction face : FACES) {
+    for (final var face : FACES) {
       if (face == clickedFace) {
         continue;
       }
